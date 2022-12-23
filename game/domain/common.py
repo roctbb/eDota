@@ -46,9 +46,9 @@ class Position:
     direction: Direction
 
 
-class Buster:
-    def __init__(self, characteristic, value, ticks):
-        self.characteristic = characteristic
+class Booster:
+    def __init__(self, property, value, ticks):
+        self.property = property
         self.ticks_left = ticks
         self.value = value
 
@@ -59,12 +59,12 @@ class Buster:
         return self.ticks_left <= 0
 
     def apply(self, object):
-        if self.characteristic in object.properties:
-            object.properties[self.characteristic] += self.value
+        if self.property in object.properties:
+            object.properties[self.property] += self.value
 
     def deapply(self, object):
-        if self.characteristic in object.properties:
-            object.properties[self.characteristic] -= self.value
+        if self.property in object.properties:
+            object.properties[self.property] -= self.value
 
 
 class Event:
@@ -95,7 +95,7 @@ class Object:
         description = {
             "direction": self.direction,
             "properties": self.properties,
-            "type": self.__class__.__name__,
+            "type": self.type,
         }
 
         if point:
@@ -103,3 +103,7 @@ class Object:
             description["y"] = point.y
 
         return description
+
+    @property
+    def type(self):
+        return self.__class__.__name__

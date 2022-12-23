@@ -1,5 +1,4 @@
 from domain.common import Object, Position, Decision, Point, Direction
-from domain.item import Item
 from domain.inventory import Inventory
 from typing import Tuple, Callable, Optional
 import traceback
@@ -22,12 +21,13 @@ class GeneralPlayer(Object):
 
         self.history = []
         self.errors = []
-        self.busters = []
+        self.boosters = []
 
     def as_dict(self, point):
         base = super().as_dict(point)
         base['errors'] = [str(e) for e in self.errors]
         base['history'] = self.history
+        base['inventory'] = [item.as_dict() for item in self.inventory.items()]
         return base
 
     def step(self, point: Point, map_state) -> Optional[Decision]:
@@ -43,7 +43,8 @@ class GeneralPlayer(Object):
             self.errors.append(Exception("No choice"))
             self.history.append("no_choice")
             return
-        parts = choice.split()
+
+        parts = choice.split(" ")
 
         if not Decision.has_value(parts[0]):
             self.errors.append(Exception("Invalid choice: " + choice))
@@ -51,12 +52,12 @@ class GeneralPlayer(Object):
             return
         else:
             self.history.append(choice)
+
         if parts[0] == Decision.USE:
             if len(parts) != 2:
                 self.errors.append(Exception("Invalid choice: " + choice))
                 self.history.append("invalid_choice")
                 return
-
             item = self.inventory.pop(parts[1])
             if not item:
                 self.errors.append(Exception("No item in inventory: " + choice))

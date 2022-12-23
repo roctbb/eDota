@@ -17,7 +17,7 @@
         integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
         crossorigin="anonymous"></script>
 <script>
-    let total_count = 15
+    let total_count = 0
     let loaded = 0
     let socket = undefined
 
@@ -31,6 +31,7 @@
         Wall: "/static/objects/wall/brick.jpeg",
         Coin: "/static/objects/coin/coin.png",
         Grass: "/static/grass.jpeg",
+        SniperBooster: "/static/objects/Sniper/sniper.png",
         Player: {
             left: "/static/objects/player/left.png",
             right: "/static/objects/player/right.png",
@@ -64,38 +65,19 @@
     };
 
 
-    images = {
-        Wall: undefined,
-        Coin: undefined,
-        Grass: undefined,
-        Player: {
-            left: undefined,
-            up: undefined,
-            down: undefined,
-            right: undefined,
-        },
-        Ray: {
-            left: undefined,
-            up: undefined,
-            down: undefined,
-            right: undefined,
-        },
-        Tower: {
-            left: undefined,
-            up: undefined,
-            down: undefined,
-            right: undefined,
-        }
-    }
+    images = {}
 
-    const types = ['Wall', 'Coin', 'Grass', 'Player', 'Ray', 'Tower']
-    types.forEach((type) => {
-        if (images[type] === undefined) {
+    Object.keys(image_urls).forEach((type) => {
+        if (typeof image_urls[type] === 'string') {
+            total_count += 1
             images[type] = new Image;
             images[type].onload = image_loaded
             images[type].src = image_urls[type];
         } else {
-            ['left', 'right', 'up', 'down'].forEach((direction) => {
+            images[type] = {};
+            total_count += 4;
+            let sides = ['left', 'right', 'up', 'down']
+            sides.forEach((direction) => {
                 images[type][direction] = new Image;
                 images[type][direction].onload = image_loaded
                 images[type][direction].src = image_urls[type][direction];

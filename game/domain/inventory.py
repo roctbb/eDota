@@ -17,8 +17,8 @@ class Inventory:
 
     def pop(self, title: str) -> Optional[Item]:
         try:
-            item = next(item for item in self._items if item.title == title)
-        except:
+            item = next(item for item in self._items if item.type == title)
+        except Exception as e:
             return None
 
         self._items.remove(item)

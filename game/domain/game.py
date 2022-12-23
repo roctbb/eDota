@@ -137,7 +137,6 @@ class Game:
                 if self.can_attack(Point(x, i)):
                     break
 
-        print(player,x, y, attack_point)
         events = []
         if attack_point:
             if self.can_attack(attack_point):

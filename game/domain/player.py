@@ -26,5 +26,9 @@ class Player(GeneralPlayer):
         self.decider = getattr(module, "make_choice")
 
     def step(self, point, map_state):
+        for booster in self.boosters[:]:
+            booster.tick()
+            if booster.over():
+                self.boosters.remove(booster)
         self._update_decider()
         return super(Player, self).step(point, map_state)
