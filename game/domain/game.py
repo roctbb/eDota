@@ -10,12 +10,11 @@ class Game:
         self.items = {}
         self.objects = {}
 
-
     def get_state(self):
         state = [[{"player": None, "items": [], "object": None} for _ in range(self.height)] for _ in range(self.width)]
 
         for (x, y), player in self.players.items():
-            state[x][y]['players'] = player.as_dict(Point(x, y))
+            state[x][y]['player'] = player.as_dict(Point(x, y))
 
         for (x, y), item in self.items.items():
             state[x][y]['items'] = item.as_dict(Point(x, y))
@@ -23,7 +22,11 @@ class Game:
         for (x, y), object in self.objects.items():
             state[x][y]['object'] = object.as_dict(Point(x, y))
 
+        return state
+
     def get(self, point: Point):
+        if not point:
+            return None
         if (point.x, point.y) in self.players:
             return self.players.get((point.x, point.y))
         if (point.x, point.y) in self.objects:
@@ -86,6 +89,7 @@ class Game:
             es = self.apply_attack(player, point, decision)
             if es:
                 events.extend(es)
+
         return self.as_dict(events)
 
     def apply_attack(self, player, point, decision):
@@ -97,9 +101,12 @@ class Game:
             player.rotate(Direction.DOWN)
         if decision == Decision.FIRE_UP:
             player.rotate(Direction.UP)
-            
+
         power = player.properties.get('power')
         if not power:
+            return []
+        distance = player.properties.get('fire_distance')
+        if not distance:
             return []
 
         x = point.x
@@ -107,41 +114,44 @@ class Game:
 
         attack_point = None
         if decision == Decision.FIRE_LEFT:
-            for i in range(x - 1, -1, -1):
+            for i in range(x - 1, max(-1, x - distance), -1):
+                attack_point = Point(i, y)
                 if self.can_attack(Point(i, y)):
-                    attack_point = Point(i, y)
                     break
 
         elif decision == Decision.FIRE_RIGHT:
-            for i in range(x + 1, self.width):
+            for i in range(x + 1, min(x + distance, self.width)):
+                attack_point = Point(i, y)
                 if self.can_attack(Point(i, y)):
-                    attack_point = Point(i, y)
                     break
 
         if decision == Decision.FIRE_UP:
-            for i in range(y - 1, -1, -1):
+            for i in range(y - 1, max(-1, y - distance), -1):
+                attack_point = Point(x, i)
                 if self.can_attack(Point(x, i)):
-                    attack_point = Point(x, i)
                     break
 
         elif decision == Decision.FIRE_DOWN:
-            for i in range(y + 1, self.height):
+            for i in range(y + 1, min(y + distance, self.height)):
+                attack_point = Point(x, i)
                 if self.can_attack(Point(x, i)):
-                    attack_point = Point(x, i)
                     break
 
+        print(player,x, y, attack_point)
         events = []
         if attack_point:
-            target = self.get(attack_point)
-            target.attack(power)
+            if self.can_attack(attack_point):
+                target = self.get(attack_point)
+                target.attack(power)
+
+                if not target.alive():
+                    if target.inventory.items():
+                        self.items[(attack_point.x, attack_point.y)] = random.choice(
+                            [item for item in target.inventory.items()])
+                        target.inventory = None
+                    self.delete(Point(attack_point.x, attack_point.y))
 
             events.append(Event("shot", {"from": (x, y), "to": (attack_point.x, attack_point.y)}))
-
-            if not target.alive():
-                if target.inventory.items():
-                    self.items[(attack_point.x, attack_point.y)] = random.choice([item for item in target.inventory.items()])
-                    target.inventory = None
-                self.delete(Point(attack_point.x, attack_point.y))
         return events
 
     def apply_move(self, player, point, decision):

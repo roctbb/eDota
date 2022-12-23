@@ -8,29 +8,23 @@ from domain.common import Position, Point, Direction
 from domain.objects.wall import Wall
 from domain.player import Player
 from domain.repositories.players import PlayersRepository
+from domain.units.tower import Tower
 
 TEMPLATE = """
 ........................
 .######################.
 .#....................#.
 .#.....###....###.....#.
+.#.....#...TT...#.....#.
 .#.....#........#.....#.
 .#.....#........#.....#.
-.#.....#........#.....#.
-.###...##########...###.
+.###.T.##########.T.###.
 ........................
 ........................
+.#.....#..TTTT..#.....#.
 .#.....#........#.....#.
 .#.....#........#.....#.
 .#.....#........#.....#.
-.#.....#........#.....#.
-........................
-........................
-##.###.###.....###.##.##
-.#.#.....#.....#....#.#.
-........................
-.#.#.....#.....#....#.#.
-##.###.###.....###.##.##
 ........................
 ........................
 ##.###.###.....###.##.##
@@ -40,16 +34,23 @@ TEMPLATE = """
 ##.###.###.....###.##.##
 ........................
 ........................
-.#.....#........#.....#.
-.#.....#........#.....#.
-.#.....#........#.....#.
-.#.....#........#.....#.
+##.###.###.....###.##.##
+.#.#.....#.....#....#.#.
+........................
+.#.#.....#.....#....#.#.
+##.###.###.....###.##.##
 ........................
 ........................
-.###...##########...###.
 .#.....#........#.....#.
 .#.....#........#.....#.
 .#.....#........#.....#.
+.#.....#..TTTT..#.....#.
+........................
+........................
+.###.T.##########.T.###.
+.#.....#........#.....#.
+.#.....#........#.....#.
+.#.....#...TT...#.....#.
 .#.....###....###.....#.
 .#....................#.
 .######################.
@@ -71,6 +72,8 @@ class BigMap(Map):
             for j in range(len(rows[i])):
                 if rows[i][j] == '#':
                     game.objects[(i, j)] = Wall()
+                if rows[i][j] == 'T':
+                    game.players[(i, j)] = Tower()
 
         for i in range(10):
             while True:
@@ -86,12 +89,13 @@ class BigMap(Map):
         player_descriptions = repository.all()
 
         for description in player_descriptions:
-            while True:
-                x = random.randint(0, width - 1)
-                y = random.randint(0, height - 1)
+            for i in range(10):
+                while True:
+                    x = random.randint(0, width - 1)
+                    y = random.randint(0, height - 1)
 
-                if (x, y) in game.objects or (x, y) in game.items:
-                    continue
+                    if (x, y) in game.objects or (x, y) in game.items:
+                        continue
 
-                game.players[(x, y)] = Player(description[0], repository)
-                break
+                    game.players[(x, y)] = Player(description[0], repository)
+                    break

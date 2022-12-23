@@ -17,7 +17,7 @@
         integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
         crossorigin="anonymous"></script>
 <script>
-    let total_count = 7
+    let total_count = 15
     let loaded = 0
     let socket = undefined
 
@@ -42,6 +42,12 @@
             right: "/static/objects/ray/horizontal.png",
             up: "/static/objects/ray/vertical.png",
             down: "/static/objects/ray/vertical.png"
+        },
+        Tower: {
+            left: "/static/objects/tower/left.png",
+            right: "/static/objects/tower/right.png",
+            up: "/static/objects/tower/up.png",
+            down: "/static/objects/tower/down.png"
         }
     }
 
@@ -73,10 +79,16 @@
             up: undefined,
             down: undefined,
             right: undefined,
+        },
+        Tower: {
+            left: undefined,
+            up: undefined,
+            down: undefined,
+            right: undefined,
         }
     }
 
-    const types = ['Wall', 'Coin', 'Grass', 'Player', 'Ray']
+    const types = ['Wall', 'Coin', 'Grass', 'Player', 'Ray', 'Tower']
     types.forEach((type) => {
         if (images[type] === undefined) {
             images[type] = new Image;
@@ -97,15 +109,16 @@
         } else {
             ctx.drawImage(images[object.type], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         }
-    }
 
-    function drawPlayer(object, offset_left, offset_top, cell_side) {
-        ctx.drawImage(images['Player'][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         ctx.fillStyle = '#ffffff';
-        let w_name = ctx.measureText(object.properties.name).width;
-        let w_life = ctx.measureText(object.properties.life.toString()).width;
-        ctx.fillText(object.properties.name, offset_left + (object.x + 0.5) * cell_side - w_name / 2, offset_top + (object.y + 0.3) * cell_side);
-        ctx.fillText(object.properties.life.toString(), offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 0.6) * cell_side);
+        if (object.properties.name) {
+            let w_name = ctx.measureText(object.properties.name).width;
+            ctx.fillText(object.properties.name, offset_left + (object.x + 0.5) * cell_side - w_name / 2, offset_top + (object.y + 0.3) * cell_side);
+        }
+        if (object.properties.life) {
+            let w_life = ctx.measureText(object.properties.life.toString()).width;
+            ctx.fillText(object.properties.life.toString(), offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 0.6) * cell_side);
+        }
     }
 
     function drawFrame(message) {
@@ -142,7 +155,7 @@
         })
 
         frame.players.forEach(object => {
-            drawPlayer(object, offset_left, offset_top, cell_side)
+            drawObject(object, offset_left, offset_top, cell_side)
         })
 
         frame.items.forEach(object => {
