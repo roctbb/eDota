@@ -1,0 +1,5 @@
+PG_HOST="localhost"
+PG_LOGIN="postgres"
+PG_PASSWORD=""
+PG_PORT=5432
+PG_DATABASE="edota"

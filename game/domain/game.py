@@ -4,13 +4,12 @@ from domain.common import *
 
 
 class Game:
-    def __init__(self, map):
+    def __init__(self):
         self.size = (0, 0)
         self.players = {}
         self.items = {}
         self.objects = {}
 
-        map.init(self)
 
     def get_state(self):
         state = [[{"player": None, "items": [], "object": None} for _ in range(self.height)] for _ in range(self.width)]

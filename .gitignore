@@ -1,2 +1,6 @@
 # Project exclude paths
 /server/node_modules/
+/server/package-lock.json
+/game/bots/*
+/server/.env
+/game/config.py

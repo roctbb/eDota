@@ -3,7 +3,7 @@ from domain.item import Item
 
 
 class Inventory:
-    def __init__(self, startpack: Tuple[Item]):
+    def __init__(self, startpack: Tuple[Item] = ()):
         self._items = []
 
         for item in startpack:
