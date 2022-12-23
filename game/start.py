@@ -13,10 +13,12 @@ r = redis.Redis()
 conn = psycopg2.connect(database=PG_DATABASE, user=PG_LOGIN, password=PG_PASSWORD, host=PG_HOST, port=PG_PORT)
 
 repository = PlayersRepository(conn)
-game = Game()
-BigMap.init(game, repository)
 
 while True:
-    frame = game.make_step()
-    r.publish('edota_frame', json.dumps(frame))
-    time.sleep(0.5)
+    game = Game()
+    BigMap.init(game, repository)
+
+    for step in range(120):
+        frame = game.make_step()
+        r.publish('edota_frame', json.dumps(frame))
+        time.sleep(0.5)

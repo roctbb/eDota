@@ -144,11 +144,14 @@ class Game:
                 target.attack(power)
 
                 if not target.alive():
-                    if target.inventory.items():
-                        self.items[(attack_point.x, attack_point.y)] = random.choice(
-                            [item for item in target.inventory.items()])
-                        target.inventory = None
-                    self.delete(Point(attack_point.x, attack_point.y))
+                    try:
+                        if target.inventory.items():
+                            self.items[(attack_point.x, attack_point.y)] = random.choice(
+                                [item for item in target.inventory.items()])
+                            target.inventory = None
+                        self.delete(Point(attack_point.x, attack_point.y))
+                    except:
+                        pass
 
             events.append(Event("shot", {"from": (x, y), "to": (attack_point.x, attack_point.y)}))
         return events

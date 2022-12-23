@@ -81,7 +81,7 @@ class BigMap(Map):
                 x = random.randint(0, width - 1)
                 y = random.randint(0, height - 1)
 
-                if (x, y) in game.objects or (x, y) in game.items:
+                if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
                     continue
 
                 game.items[(x, y)] = SniperBooster()
@@ -95,7 +95,7 @@ class BigMap(Map):
                     x = random.randint(0, width - 1)
                     y = random.randint(0, height - 1)
 
-                    if (x, y) in game.objects or (x, y) in game.items:
+                    if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
                         continue
 
                     game.players[(x, y)] = Player(description[0], repository)
