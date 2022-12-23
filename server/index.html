@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO chat</title>
+    <style>
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    </style>
+
+</head>
+<body>
+<canvas id="game" style="width: 100%; height: 100%;"></canvas>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"
+        integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI"
+        crossorigin="anonymous"></script>
+<script>
+    let total_count = 7
+    let loaded = 0
+    let socket = undefined
+
+    const canvas = document.getElementById("game");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    let image_urls = {
+        Wall: "/static/objects/wall/brick.jpeg",
+        Coin: "/static/objects/coin/coin.png",
+        Grass: "/static/grass.jpeg",
+        Player: {
+            left: "/static/objects/player/left.png",
+            right: "/static/objects/player/right.png",
+            up: "/static/objects/player/up.png",
+            down: "/static/objects/player/down.png"
+        },
+        Ray: {
+            left: "/static/objects/ray/horizontal.png",
+            right: "/static/objects/ray/horizontal.png",
+            up: "/static/objects/ray/vertical.png",
+            down: "/static/objects/ray/vertical.png"
+        }
+    }
+
+    let image_loaded = function () {
+        loaded++
+        if (loaded === total_count) {
+            console.log(images)
+            socket = io();
+
+            socket.on('frame', function (message) {
+                drawFrame(message)
+            })
+        }
+    };
+
+
+    images = {
+        Wall: undefined,
+        Coin: undefined,
+        Grass: undefined,
+        Player: {
+            left: undefined,
+            up: undefined,
+            down: undefined,
+            right: undefined,
+        },
+        Ray: {
+            left: undefined,
+            up: undefined,
+            down: undefined,
+            right: undefined,
+        }
+    }
+
+    const types = ['Wall', 'Coin', 'Grass', 'Player', 'Ray']
+    types.forEach((type) => {
+        if (images[type] === undefined) {
+            images[type] = new Image;
+            images[type].onload = image_loaded
+            images[type].src = image_urls[type];
+        } else {
+            ['left', 'right', 'up', 'down'].forEach((direction) => {
+                images[type][direction] = new Image;
+                images[type][direction].onload = image_loaded
+                images[type][direction].src = image_urls[type][direction];
+            })
+        }
+    })
+
+    function drawObject(object, offset_left, offset_top, cell_side) {
+        if (object.direction !== "no") {
+            ctx.drawImage(images[object.type][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
+        } else {
+            ctx.drawImage(images[object.type], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
+        }
+    }
+
+    function drawPlayer(object, offset_left, offset_top, cell_side) {
+        ctx.drawImage(images['Player'][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
+        ctx.fillStyle = '#ffffff';
+        let w_name = ctx.measureText(object.properties.name).width;
+        let w_life = ctx.measureText(object.properties.life.toString()).width;
+        ctx.fillText(object.properties.name, offset_left + (object.x + 0.5) * cell_side - w_name / 2, offset_top + (object.y + 0.3) * cell_side);
+        ctx.fillText(object.properties.life.toString(), offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 0.6) * cell_side);
+    }
+
+    function drawFrame(message) {
+        const frame = JSON.parse(message)
+        console.log(frame)
+
+        const frame_width = frame.width
+        const frame_height = frame.height
+
+        const cheight = canvas.height;
+        const cwidth = canvas.width;
+
+        let cell_width = Math.floor(cwidth / frame_width)
+        let cell_height = Math.floor(cheight / frame_height)
+
+        let cell_side = Math.min(cell_width, cell_height)
+
+        const offset_left = Math.floor((cwidth - cell_side * frame_width) / 2)
+        const offset_top = Math.floor((cheight - cell_side * frame_height) / 2)
+
+        ctx.fillStyle = "green";
+        ctx.font = Math.round(cell_side / 3) + "px sans-serif";
+
+        console.log(offset_left, offset_top, cell_side)
+
+        for (let i = 0; i < frame_width; i++) {
+            for (let j = 0; j < frame_height; j++) {
+                ctx.drawImage(images['Grass'], offset_left + i * cell_side, offset_top + j * cell_side, cell_side, cell_side);
+            }
+        }
+
+        frame.objects.forEach(object => {
+            drawObject(object, offset_left, offset_top, cell_side)
+        })
+
+        frame.players.forEach(object => {
+            drawPlayer(object, offset_left, offset_top, cell_side)
+        })
+
+        frame.items.forEach(object => {
+            drawObject(object, offset_left, offset_top, cell_side)
+
+        })
+
+        frame.events.forEach(event => {
+            if (event.type === 'shot') {
+                let sx = event.params.from[0]
+                let sy = event.params.from[1]
+                let ex = event.params.to[0]
+                let ey = event.params.to[1]
+
+                if (sx === ex) {
+                    if (ey > sy) {
+                        for (i = sy + 1; i < ey; i++) {
+                            ctx.drawImage(images['Ray']['down'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
+                        }
+                    } else {
+                        for (i = sy - 1; i > ey; i--) {
+                            ctx.drawImage(images['Ray']['up'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
+                        }
+                    }
+                } else if (sy === ey) {
+                    if (ex > sx) {
+                        for (i = sx + 1; i < ex; i++) {
+                            ctx.drawImage(images['Ray']['right'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
+                        }
+                    } else {
+                        for (i = sx - 1; i > ex; i--) {
+                            ctx.drawImage(images['Ray']['left'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
+                        }
+                    }
+                }
+            }
+
+        })
+    }
+
+</script>
+</body>
+</html>
