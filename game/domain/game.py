@@ -41,7 +41,7 @@ class Game:
     def delete(self, point: Point):
         if (point.x, point.y) in self.players:
             del self.players[(point.x, point.y)]
-        if (point.x, point.y) in self.objects:
+        if (point.x, point.y) in self.objects and not self.objects[(point.x, point.y)].is_transparent:
             del self.objects[(point.x, point.y)]
 
     def can_move(self, point: Point) -> bool:
@@ -49,10 +49,10 @@ class Game:
             return False
         if point.y < 0 or point.y >= self.height:
             return False
-        return self.get(point) == None
+        return self.get(point) == None or self.get(point).is_transparent == True
 
     def can_attack(self, point: Point) -> bool:
-        return self.get(point) != None
+        return self.get(point) != None and self.get(point).is_flat == False
 
     def as_dict(self, events=()):
         return {

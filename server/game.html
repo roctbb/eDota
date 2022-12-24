@@ -20,6 +20,14 @@
     let total_count = 0
     let loaded = 0
     let socket = undefined
+    let camera_x = 0
+    let camera_y = 0
+    let cell_side = 0
+    let frame_width = 0
+    let frame_height = 0
+    let frame = undefined
+    let images = {}
+    let last_mouse_event = Date.now()
 
     const canvas = document.getElementById("game");
     canvas.width = window.innerWidth;
@@ -28,9 +36,16 @@
     const ctx = canvas.getContext("2d");
 
     let image_urls = {
-        Wall: "/static/objects/wall/brick.jpeg",
+        Wall: "/static/objects/wall/wall.png",
         Coin: "/static/objects/coin/coin.png",
-        Grass: "/static/grass.jpeg",
+        Grass: "/static/grass.png",
+        Stump: "/static/stump.png",
+        Road: "/static/road.png",
+        RadientAncient: "/static/objects/ancient/radient.png",
+        DareAncient: "/static/objects/ancient/dare.png",
+        Rocks: "/static/rocks.png",
+        Snow: "/static/snow.png",
+        Water: "/static/water.png",
         SniperBooster: "/static/objects/Sniper/sniper.png",
         HealthKit: "/static/objects/healthkit/healthkit.png",
         Player: {
@@ -50,23 +65,92 @@
             right: "/static/objects/tower/right.png",
             up: "/static/objects/tower/up.png",
             down: "/static/objects/tower/down.png"
+        },
+        Tree: {
+            left: "/static/objects/tree/left.png",
+            right: "/static/objects/tree/right.png",
+            up: "/static/objects/tree/up.png",
+            down: "/static/objects/tree/down.png"
         }
     }
 
     let image_loaded = function () {
         loaded++
         if (loaded === total_count) {
-            console.log(images)
             socket = io();
 
             socket.on('frame', function (message) {
-                drawFrame(message)
+                frame = JSON.parse(message)
+                drawFrame()
             })
         }
     };
 
+    const checkKey = (e) => {
 
-    images = {}
+        e = e || window.event;
+
+        if (e.keyCode == 38) {
+            moveCameraUp()
+        } else if (e.keyCode == 40) {
+            moveCameraDown()
+        } else if (e.keyCode == 37) {
+            moveCameraLeft()
+        } else if (e.keyCode == 39) {
+            moveCameraRight()
+        }
+        drawFrame()
+    }
+
+    function moveCameraRight() {
+        if (camera_x + cell_side + canvas.width < (frame_width + 1) * cell_side) {
+            camera_x += cell_side
+        }
+    }
+
+    function moveCameraLeft() {
+        if (camera_x - cell_side >= 0) {
+            camera_x -= cell_side
+        }
+    }
+
+    function moveCameraUp() {
+        if (camera_y - cell_side >= 0) {
+            camera_y -= cell_side
+        }
+    }
+
+    function moveCameraDown() {
+        if (camera_y + cell_side + canvas.height < (frame_height + 1) * cell_side) {
+            camera_y += cell_side
+        }
+    }
+
+    function checkMouse(event) {
+        if (Date.now() - last_mouse_event < 100) {
+            return
+        }
+        last_mouse_event = Date.now()
+
+        event = event || window.event;
+
+        if (event.screenX < cell_side * 5) {
+            moveCameraLeft()
+        }
+        if (event.screenY < cell_side * 5) {
+            moveCameraUp()
+        }
+        if (event.screenX > canvas.width - cell_side * 5) {
+            moveCameraRight()
+        }
+        if (event.screenY > canvas.height - cell_side * 5) {
+            moveCameraDown()
+        }
+    }
+
+    document.onkeydown = checkKey;
+    document.onmousemove = checkMouse;
+
 
     Object.keys(image_urls).forEach((type) => {
         if (typeof image_urls[type] === 'string') {
@@ -86,7 +170,7 @@
         }
     })
 
-    function drawObject(object, offset_left, offset_top, cell_side) {
+    function drawObject(object, offset_left, offset_top) {
         if (object.direction !== "no") {
             ctx.drawImage(images[object.type][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         } else {
@@ -104,12 +188,10 @@
         }
     }
 
-    function drawFrame(message) {
-        const frame = JSON.parse(message)
-        console.log(frame)
+    function drawFrame() {
 
-        const frame_width = frame.width
-        const frame_height = frame.height
+        frame_width = frame.width
+        frame_height = frame.height
 
         const cheight = canvas.height;
         const cwidth = canvas.width;
@@ -117,15 +199,15 @@
         let cell_width = Math.floor(cwidth / frame_width)
         let cell_height = Math.floor(cheight / frame_height)
 
-        let cell_side = Math.min(cell_width, cell_height)
+        cell_side = Math.max(Math.min(cell_width, cell_height), 48)
 
-        const offset_left = Math.floor((cwidth - cell_side * frame_width) / 2)
-        const offset_top = Math.floor((cheight - cell_side * frame_height) / 2)
+        const offset_left = Math.max(Math.floor((cwidth - cell_side * frame_width) / 2), 0) - camera_x
+        const offset_top = Math.max(Math.floor((cheight - cell_side * frame_height) / 2), 0) - camera_y
 
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "white";
         ctx.font = Math.round(cell_side / 3) + "px sans-serif";
 
-        console.log(offset_left, offset_top, cell_side)
+        ctx.fillRect(-cell_side, -cell_side, cwidth + cell_side, cheight + cell_side)
 
         for (let i = 0; i < frame_width; i++) {
             for (let j = 0; j < frame_height; j++) {
@@ -134,15 +216,15 @@
         }
 
         frame.objects.forEach(object => {
-            drawObject(object, offset_left, offset_top, cell_side)
+            drawObject(object, offset_left, offset_top)
         })
 
         frame.players.forEach(object => {
-            drawObject(object, offset_left, offset_top, cell_side)
+            drawObject(object, offset_left, offset_top)
         })
 
         frame.items.forEach(object => {
-            drawObject(object, offset_left, offset_top, cell_side)
+            drawObject(object, offset_left, offset_top)
 
         })
 

@@ -15,6 +15,10 @@ class Direction(str, Enum):
     DOWN = "down"
     NO = "no"
 
+    @classmethod
+    def directions(cls):
+        return [cls.LEFT, cls.RIGHT, cls.DOWN, cls.UP]
+
 
 class Decision(str, Enum):
     FIRE_UP = "fire_up"
@@ -83,6 +87,8 @@ class Object:
     def __init__(self):
         self.direction = Direction.NO
         self.properties = {}
+        self.is_flat = False
+        self.is_transparent = False
 
     def attack(self, power: int):
         if 'life' in self.properties:

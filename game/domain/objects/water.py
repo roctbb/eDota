@@ -1,10 +1,8 @@
 from domain.common import *
 
 
-class Wall(Object):
+class Water(Object):
     def __init__(self):
         super().__init__()
 
-        self.properties = {
-            "life": 40,
-        }
+        self.is_flat = True
