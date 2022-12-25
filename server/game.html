@@ -46,6 +46,7 @@
         Rocks: "/static/rocks.png",
         Snow: "/static/snow.png",
         Water: "/static/water.png",
+        Explosion: "/static/explosion.png",
         SniperBooster: "/static/objects/Sniper/sniper.png",
         HealthKit: "/static/objects/healthkit/healthkit.png",
         Player: {
@@ -53,6 +54,18 @@
             right: "/static/objects/player/right.png",
             up: "/static/objects/player/up.png",
             down: "/static/objects/player/down.png"
+        },
+        RadientPlayer: {
+            left: "/static/objects/radientplayer/left.png",
+            right: "/static/objects/radientplayer/right.png",
+            up: "/static/objects/radientplayer/up.png",
+            down: "/static/objects/radientplayer/down.png"
+        },
+        DarePlayer: {
+            left: "/static/objects/dareplayer/left.png",
+            right: "/static/objects/dareplayer/right.png",
+            up: "/static/objects/dareplayer/up.png",
+            down: "/static/objects/dareplayer/down.png"
         },
         RadientRay: {
             left: "/static/objects/ray/radient_horizontal.png",
@@ -182,11 +195,19 @@
         }
     })
 
-    function drawObject(object, offset_left, offset_top) {
+    function drawObject(object, offset_left, offset_top, team) {
+        if (object.properties.team && images[object.properties.team + object.type])  {
+            team = object.properties.team
+        }
+        else {
+            team = ''
+        }
+
         if (object.direction !== "no") {
-            ctx.drawImage(images[object.type][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
+            console.log(team + object.type)
+            ctx.drawImage(images[team + object.type][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         } else {
-            ctx.drawImage(images[object.type], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
+            ctx.drawImage(images[team + object.type], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         }
 
         ctx.fillStyle = '#ffffff';
@@ -236,7 +257,7 @@
         })
 
         frame.players.forEach(object => {
-            drawObject(object, offset_left, offset_top)
+            drawObject(object, offset_left, offset_top, object.properties.team)
         })
 
         frame.items.forEach(object => {
@@ -245,6 +266,11 @@
         })
 
         frame.events.forEach(event => {
+            console.log(event)
+            if (event.type === 'death')
+            {
+                ctx.drawImage(images['Explosion'], offset_left + event.params.at[0] * cell_side, offset_top + event.params.at[1] * cell_side, cell_side, cell_side);
+            }
             if (event.type === 'shot') {
                 let sx = event.params.from[0]
                 let sy = event.params.from[1]

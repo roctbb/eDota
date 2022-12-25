@@ -5,18 +5,30 @@ def tower_choice(x, y, state):
     me = state[x][y]['player']
     distance = me['properties']['fire_distance']
 
-    for i in range(x - 1, x - distance, -1):
-        if state[i][y]['player'] and state[i][y]['player']['type'] == 'Player':
-            return "fire_left"
-    for i in range(x + 1, x + distance):
-        if state[i][y]['player'] and state[i][y]['player']['type'] == 'Player':
-            return "fire_right"
-    for i in range(y - 1, y - distance, -1):
-        if state[x][i]['player'] and state[x][i]['player']['type'] == 'Player':
-            return "fire_up"
-    for i in range(y + 1, y + distance):
-        if state[x][i]['player'] and state[x][i]['player']['type'] == 'Player':
-            return "fire_down"
+    for i in range(x - 1, x - distance - 1, -1):
+        if state[i][y]['player']:
+            if state[i][y]['player']['properties'].get('team') != me['properties'].get('team'):
+                return "fire_left"
+            else:
+                break
+    for i in range(x + 1, x + distance + 1):
+        if state[i][y]['player']:
+            if state[i][y]['player']['properties'].get('team') != me['properties'].get('team'):
+                return "fire_right"
+            else:
+                break
+    for i in range(y - 1, y - distance - 1, -1):
+        if state[x][i]['player']:
+            if state[x][i]['player']['properties'].get('team') != me['properties'].get('team'):
+                return "fire_up"
+            else:
+                break
+    for i in range(y + 1, y + distance + 1):
+        if state[x][i]['player']:
+            if state[x][i]['player']['properties'].get('team') != me['properties'].get('team'):
+                return "fire_down"
+            else:
+                break
 
 
 class Tower(GeneralPlayer):

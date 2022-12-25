@@ -116,25 +116,25 @@ class Game:
 
         attack_point = None
         if decision == Decision.FIRE_LEFT:
-            for i in range(x - 1, max(-1, x - distance), -1):
+            for i in range(x - 1, max(-1, x - distance - 1), -1):
                 attack_point = Point(i, y)
                 if self.can_attack(Point(i, y)):
                     break
 
         elif decision == Decision.FIRE_RIGHT:
-            for i in range(x + 1, min(x + distance, self.width)):
+            for i in range(x + 1, min(x + distance + 1, self.width)):
                 attack_point = Point(i, y)
                 if self.can_attack(Point(i, y)):
                     break
 
         if decision == Decision.FIRE_UP:
-            for i in range(y - 1, max(-1, y - distance), -1):
+            for i in range(y - 1, max(-1, y - distance - 1), -1):
                 attack_point = Point(x, i)
                 if self.can_attack(Point(x, i)):
                     break
 
         elif decision == Decision.FIRE_DOWN:
-            for i in range(y + 1, min(y + distance, self.height)):
+            for i in range(y + 1, min(y + distance + 1, self.height)):
                 attack_point = Point(x, i)
                 if self.can_attack(Point(x, i)):
                     break
@@ -157,6 +157,7 @@ class Game:
 
                     except:
                         pass
+                    events.append(Event("death", {"at": (attack_point.x, attack_point.y)}))
                     self.delete(Point(attack_point.x, attack_point.y))
 
             events.append(Event("shot", {"from": (x, y), "to": (attack_point.x, attack_point.y), 'team': team}))

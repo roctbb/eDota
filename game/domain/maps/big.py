@@ -7,6 +7,7 @@ from domain.items.sniper import SniperBooster
 from domain.map import Map
 from domain.game import Game
 from domain.common import Position, Point, Direction
+from domain.objects.Snow import Snow
 from domain.objects.ancients import RadientAncient, DareAncient
 from domain.objects.road import Road
 from domain.objects.rocks import Rocks
@@ -144,7 +145,8 @@ TYPES = {
     's': Stump,
     'k': Rocks,
     'R': RadientAncient,
-    'D': DareAncient
+    'D': DareAncient,
+    '*': Snow
 }
 
 
