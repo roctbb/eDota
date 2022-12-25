@@ -9,6 +9,7 @@ class Game:
         self.players = {}
         self.items = {}
         self.objects = {}
+        self.backgrounds = {}
 
     def get_state(self):
         state = [[{"player": None, "items": [], "object": None} for _ in range(self.height)] for _ in range(self.width)]
@@ -59,6 +60,7 @@ class Game:
             "players": [player.as_dict(Point(x, y)) for (x, y), player in self.players.items()],
             "items": [item.as_dict(Point(x, y)) for (x, y), item in self.items.items()],
             "objects": [object.as_dict(Point(x, y)) for (x, y), object in self.objects.items()],
+            "backgrounds": [object.as_dict(Point(x, y)) for (x, y), object in self.backgrounds.items()],
             "events": [event.as_dict() for event in events],
             "width": self.width,
             "height": self.height
@@ -138,6 +140,9 @@ class Game:
                     break
 
         events = []
+
+        team = player.properties.get('team', 'Neutral')
+
         if attack_point:
             if self.can_attack(attack_point):
                 target = self.get(attack_point)
@@ -149,11 +154,12 @@ class Game:
                             self.items[(attack_point.x, attack_point.y)] = random.choice(
                                 [item for item in target.inventory.items()])
                             target.inventory = None
-                        self.delete(Point(attack_point.x, attack_point.y))
+
                     except:
                         pass
+                    self.delete(Point(attack_point.x, attack_point.y))
 
-            events.append(Event("shot", {"from": (x, y), "to": (attack_point.x, attack_point.y)}))
+            events.append(Event("shot", {"from": (x, y), "to": (attack_point.x, attack_point.y), 'team': team}))
         return events
 
     def apply_move(self, player, point, decision):

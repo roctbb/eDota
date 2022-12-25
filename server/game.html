@@ -54,11 +54,23 @@
             up: "/static/objects/player/up.png",
             down: "/static/objects/player/down.png"
         },
-        Ray: {
-            left: "/static/objects/ray/horizontal.png",
-            right: "/static/objects/ray/horizontal.png",
-            up: "/static/objects/ray/vertical.png",
-            down: "/static/objects/ray/vertical.png"
+        RadientRay: {
+            left: "/static/objects/ray/radient_horizontal.png",
+            right: "/static/objects/ray/radient_horizontal.png",
+            up: "/static/objects/ray/radient_vertical.png",
+            down: "/static/objects/ray/radient_vertical.png"
+        },
+        DareRay: {
+            left: "/static/objects/ray/dare_horizontal.png",
+            right: "/static/objects/ray/dare_horizontal.png",
+            up: "/static/objects/ray/dare_vertical.png",
+            down: "/static/objects/ray/dare_vertical.png"
+        },
+        NeutralRay: {
+            left: "/static/objects/ray/neutral_horizontal.png",
+            right: "/static/objects/ray/neutral_horizontal.png",
+            up: "/static/objects/ray/neutral_vertical.png",
+            down: "/static/objects/ray/neutral_vertical.png"
         },
         Tower: {
             left: "/static/objects/tower/left.png",
@@ -215,6 +227,10 @@
             }
         }
 
+        frame.backgrounds.forEach(object => {
+            drawObject(object, offset_left, offset_top)
+        })
+
         frame.objects.forEach(object => {
             drawObject(object, offset_left, offset_top)
         })
@@ -238,21 +254,21 @@
                 if (sx === ex) {
                     if (ey > sy) {
                         for (i = sy + 1; i < ey; i++) {
-                            ctx.drawImage(images['Ray']['down'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
+                            ctx.drawImage(images[event.params.team + 'Ray']['down'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
                         }
                     } else {
                         for (i = sy - 1; i > ey; i--) {
-                            ctx.drawImage(images['Ray']['up'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
+                            ctx.drawImage(images[event.params.team + 'Ray']['up'], offset_left + sx * cell_side, offset_top + i * cell_side, cell_side, cell_side);
                         }
                     }
                 } else if (sy === ey) {
                     if (ex > sx) {
                         for (i = sx + 1; i < ex; i++) {
-                            ctx.drawImage(images['Ray']['right'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
+                            ctx.drawImage(images[event.params.team + 'Ray']['right'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
                         }
                     } else {
                         for (i = sx - 1; i > ex; i--) {
-                            ctx.drawImage(images['Ray']['left'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
+                            ctx.drawImage(images[event.params.team + 'Ray']['left'], offset_left + i * cell_side, offset_top + sy * cell_side, cell_side, cell_side);
                         }
                     }
                 }

@@ -20,7 +20,7 @@ def tower_choice(x, y, state):
 
 
 class Tower(GeneralPlayer):
-    def __init__(self):
+    def __init__(self, team='Neutral'):
         super().__init__()
 
         self.decider = tower_choice
@@ -29,6 +29,8 @@ class Tower(GeneralPlayer):
             'speed': 0,
             'power': 3,
             'life': 10,
-            'fire_distance': 3,
-            'name': 'tower'
+            'fire_distance': 4,
+            'name': 'tower',
+            'team': team
         }
+
