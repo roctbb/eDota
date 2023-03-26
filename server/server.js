@@ -61,8 +61,11 @@ app.post('/', async (req, res) => {
             res.redirect('/')
         }
     }
+    else {
+        res.redirect('/')
+    }
 
-    res.redirect('/')
+
 });
 
 app.get('/game', (req, res) => {
@@ -77,7 +80,7 @@ app.post('/register', async (req, res) => {
     if (req.body.name) {
         let key = helpers.makeKey(6)
         const q = {
-            text: "INSERT INTO players (name, key) VALUES ($1, $2)",
+            text: "INSERT INTO players (name, k ey) VALUES ($1, $2)",
             values: [req.body.name, key],
             rowMode: 'array',
         }
@@ -90,7 +93,10 @@ app.post('/register', async (req, res) => {
             res.redirect('/register')
         }
     }
-    res.redirect('/register')
+    else {
+        res.redirect('/register')
+    }
+
 });
 
 app.use('/static', express.static(__dirname + '/static'))
