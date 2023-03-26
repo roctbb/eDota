@@ -75,7 +75,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
     if (req.body.name) {
-        let key = makekey(6)
+        let key = helpers.makeKey(6)
         const q = {
             text: "INSERT INTO players (name, key) VALUES ($1, $2)",
             values: [req.body.name, key],

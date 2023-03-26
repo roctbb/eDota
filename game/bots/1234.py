@@ -4,6 +4,9 @@ import random
 def make_choice(x, y, field):
     me = field[x][y]['player']
 
+    print('--- ' * 3)
+    print(field)
+
     if me['inventory']:
         return f"use {me['inventory'][0]['type']}"
 
