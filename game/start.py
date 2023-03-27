@@ -5,7 +5,7 @@ from domain.game import Game
 from domain.maps.default import DefaultMap
 from domain.maps.big import BigMap
 from config import *
-import psycopg2
+import psycopg2 
 
 from domain.repositories.players import PlayersRepository
 
@@ -18,7 +18,7 @@ while True:
     game = Game()
     BigMap.init(game, repository)
 
-    for step in range(120):
+    for step in range(2):
         frame = game.make_step()
         r.publish('edota_frame', json.dumps(frame))
-        time.sleep(0.5)
+        time.sleep(0.1)
