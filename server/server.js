@@ -9,16 +9,13 @@ const pg = require('pg')
 const helpers = require('./helpers')
 var bodyParser = require('body-parser')
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.set("view engine","ejs");
 require('dotenv').config()
-var cookieParser = require('cookie-parser');
-app.use(cookieParser());
 
 
-const postgresClient = new  pg.Client({
+const postgresClient = new pg.Client({
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
     user: process.env.PG_LOGIN,
@@ -45,22 +42,20 @@ const init_redis = async () => {
 init_redis()
 
 app.get('/', (req, res) => {
-    try {
-        var login = req.cookies.login;
-        var pass = req.cookies.pass;
-        res.redirect("/team/" + login + "/" + pass);
-    }
-    catch(e) {
-        console.log("login error:");
-        console.log(e);
-        res.sendFile(__dirname + '/views/index.html');
-    }
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/', async (req, res) => {
-    if (req.body.login & req.body.pass) {
+    if (req.body.key && req.body.script) {
+        const q = {
+            text: "UPDATE players SET code = $1, state = 'ready' WHERE key = $2",
+            values: [req.body.script, req.body.key],
+            rowMode: 'array',
+        }
+
         try {
-            res.redirect('/team/' + req.body.login + "/" + req.body.pass);
+            await postgresClient.query(q)
+            res.redirect('/game')
         } catch (e) {
             console.log(e)
             res.redirect('/')
@@ -69,81 +64,39 @@ app.post('/', async (req, res) => {
     else {
         res.redirect('/')
     }
+
+
 });
 
 app.get('/game', (req, res) => {
-    res.sendFile(__dirname + '/views/game.html');
+    res.sendFile(__dirname + '/game.html');
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(__dirname + '/views/register.html');
+    res.sendFile(__dirname + '/register.html');
 });
 
 app.post('/register', async (req, res) => {
     if (req.body.name) {
+        let key = helpers.makeKey(6)
         const q = {
-            text: "INSERT INTO players (name, login, password) VALUES ($1, $2, $3)",
-            values: [req.body.name, req.body.login, req.body.pass],
+            text: "INSERT INTO players (name, key) VALUES ($1, $2)",
+            values: [req.body.name, key],
             rowMode: 'array',
         }
 
         try {
-            const res_ = await postgresClient.query("SELECT * FROM players WHERE name = '" + req.body.name + "'");
-            if(res_.rows.length > 0) {
-                alert("Такое название уже занято!");
-            }
-            else {
-                res.cookie('login', req.body.login, {expire: 360000 + Date.now()});
-                res.cookie('pass', req.body.pass, {expire: 360000 + Date.now()});
-                await postgresClient.query(q);
-                res.redirect("/");
-            }
-        } catch (e) {
-            console.log("register error:")
-            console.log(e);
-            res.redirect('/register');
-        }
-    }
-    else {
-        res.redirect('/register');
-    }
-
-});
-
-app.get('/team/:login/:pass', async (req, res) => {
-    try {
-        const res_ = await postgresClient.query("SELECT * FROM players WHERE login = '" + req.params.login + "' AND password = '" +
-        req.params.pass + "'");
-        res.cookie('login', req.params.login, {expire: 360000 + Date.now()});
-        res.cookie('pass', req.params.pass, {expire: 360000 + Date.now()});
-        res.render('team', {name: res_.rows[0].name, code: res_.rows[0].code});
-    }
-    catch(e) {
-        console.log("home error:");
-        console.log(e);
-        res.redirect('/');
-        alert("Неверный логин/пароль");
-    }
-});
-
-app.post('/team/:login/:pass', async (req, res) => {
-    if (req.body.script) {
-         const q = {
-            text: "UPDATE players SET code = $1 WHERE login = $2 AND password = $3",
-            values: [req.body.script, req.params.login, req.params.pass],
-            rowMode: 'array',
-        }
-        try {
-            await postgresClient.query(q);
-            res.redirect('/team/' + req.params.login + '/' + req.params.pass);
+            await postgresClient.query(q)
+            res.send(key)
         } catch (e) {
             console.log(e)
-            res.redirect('/')
+            res.redirect('/register')
         }
     }
     else {
-        res.redirect('/team/' + req.params.login + '/' + req.params.pass);
+        res.redirect('/register')
     }
+
 });
 
 app.use('/static', express.static(__dirname + '/static'))

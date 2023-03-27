@@ -8,18 +8,20 @@
           integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
 <body>
-<h4>Авторизация</h4>
 <div class="col-md-6 col-md-offset-3">
     <form method="POST">
         <div class="form-group">
-            <label for="login">Логин</label>
-            <input type="text" id="login" name="login" class="form-control"/>
-
-            <label for="pass">Пароль</label>
-            <input type="password" id="pass" name="pass" class="form-control"/>
+            <label for="key">Ключ</label>
+            <input type="text" id="key" name="key" class="form-control"/>
         </div>
-        <input type="submit" class="form-control" value="Войти"/>
+        <div class="form-group">
+            <label for="script">Скрипт</label>
+            <textarea name="script" id="script" class="form-control"></textarea>
+        </div>
+        <input type="submit" class="form-control"/>
+
     </form>
+    <h3><a href='/game'>В игру!</a></h3>
     <h5><a href='/register'>Регистрация</a></h5>
 </div>
 </body>

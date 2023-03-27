@@ -5,7 +5,7 @@ from domain.game import Game
 from domain.maps.default import DefaultMap
 from domain.maps.big import BigMap
 from config import *
-import psycopg2 
+import psycopg2
 
 from domain.repositories.players import PlayersRepository
 
