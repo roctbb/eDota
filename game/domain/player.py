@@ -3,6 +3,7 @@ import imp
 
 from domain.repositories.players import PlayersRepository
 from domain.general_player import GeneralPlayer
+from domain.inventory import *
 
 
 class Player(GeneralPlayer):
@@ -26,6 +27,28 @@ class Player(GeneralPlayer):
         self.decider = getattr(module, "make_choice")
 
     def step(self, point, map_state):
+#        map_state_player = []
+#        for i in map_state:
+#            cell = []
+#            for j in i:
+#                if j['player']:
+#                    d = {'type' : 'Player'}
+#                    d.update(self.properties)
+#                    d.update(Player.items)
+#                    cell.append(d)
+#                else:
+#                    cell.append({})
+#                if j['items']:
+#                    cell.append({'type' : j['items']['type']})
+#                else:
+#                    cell.append({})
+#                if j['object']:
+#                    cell.append({'type' : j['object']['type'],
+#                                 'properties': j['object']['properties']})
+#                else:
+ #                   cell.append({})
+ #           map_state_player.append(cell)
+#            print(map_state_player)
         for booster in self.boosters[:]:
             booster.tick()
             if booster.over():

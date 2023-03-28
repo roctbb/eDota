@@ -22,6 +22,31 @@ class Game:
 
         for (x, y), object in self.objects.items():
             state[x][y]['object'] = object.as_dict(Point(x, y))
+            map_state_player = []
+            for i in state:
+                cell = []
+                for j in i:
+                    if j['player']:
+                        d = {'type' : 'Player'}
+                        d.update(j['player']['properties'])
+                        if j['player']['inventory']:
+                            d.update(j['player']['inventory'])
+                        else:
+                            d['inventory'] = list()
+                        cell.append(d)
+                    else:
+                        cell.append({})
+                    if j['items']:
+                        cell.append({'type' : j['items']['type']})
+                    else:
+                        cell.append({})
+                    if j['object']:
+                        cell.append({'type' : j['object']['type'],
+                                    'properties': j['object']['properties']})
+                    else:
+                        cell.append({})
+                map_state_player.append(cell)
+        print(map_state_player)
 
         return state
 
