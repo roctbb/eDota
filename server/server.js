@@ -80,7 +80,7 @@ app.post('/register', async (req, res) => {
     if (req.body.name) {
         let key = helpers.makeKey(6)
         const q = {
-            text: "INSERT INTO players (name, k ey) VALUES ($1, $2)",
+            text: "INSERT INTO players (name, key) VALUES ($1, $2)",
             values: [req.body.name, key],
             rowMode: 'array',
         }

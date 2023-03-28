@@ -18,7 +18,7 @@ while True:
     game = Game()
     BigMap.init(game, repository)
 
-    for step in range(120):
+    for step in range(2):
         frame = game.make_step()
         r.publish('edota_frame', json.dumps(frame))
-        time.sleep(0.5)
+        time.sleep(0.1)
