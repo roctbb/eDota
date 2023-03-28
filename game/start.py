@@ -19,19 +19,7 @@ while True:
     BigMap.init(game, repository)
 
     for step in range(120):
+
         frame = game.make_step()
         r.publish('edota_frame', json.dumps(frame))
         time.sleep(0.1)
-
-
-
-
-     def countdown(num_of_secs):
-        while num_of_secs:
-          m, s = divmod(num_of_secs, 60)
-        min_sec_format = '{:02d}:{:02d}'.format(m, s)
-        print(min_sec_format, end='/r')
-        time.sleep(1)
-        num_of_secs -= 1
-
-    print('Countdown finished.')

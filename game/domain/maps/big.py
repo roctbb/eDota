@@ -25,6 +25,7 @@ from domain.units.tower import Tower
 
 TEMPLATE = """
 hhhhhhhhhhhhhhhhhhhhhh
+tkk................kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk................kkt
@@ -38,18 +39,17 @@ tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
+tkk.......kk.......kkt
+tkk.......kk.......kkt
+tkk.......kk.......kkt
+tkk.......kk.......kkt
+tkk.......kk.......kkt
 tkk......kkkk......kkt
-tkk....khhhhhhk....kkt
-tkk....kkkhhkkk....kkt
-tkk....khhhhhhk....kkt
-tkk....kkkkkkkk....kkt
+tkk.....kkkkkk.....kkt
+t.s.......kk.......s.t
+t.s.......kk.......s.t
+tkk.....kkkkkk.....kkt
 tkk......kkkk......kkt
-tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
@@ -66,54 +66,55 @@ tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk................kkt
+tkk.......kk.......kkt
 tkk.......kk.......kkt
 hhhhhhhhhhhhhhhhhhhhhh
 """.strip('\n')
 
 BACKGROUND = """      
 ......................
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
-.kk.......kk.......kk.
+.rr.......rr.......rr.
+.rr...rrrrrrrrrr...rr.
+.rr....rrrrrrrr....rr.
+.rr...rr..rr..rr...rr.
+.rr..rr...rr...rr..rr.
+.rr.rr....rr....rr.rr.
+.rrrr.....rr.....rrrr.
+.rrr......rr......rrr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr......rrrr......rr.
+.rr.....rrrrrr.....rr.
+wwwwwwwwwwrrwwwwwwwwww
+wwwwwwwwwwrrwwwwwwwwww
+.rr.....rrrrrr.....rr.
+.rr......rrrr......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rr.......rr.......rr.
+.rrr......rr......rrr.
+.rrrr.....rr.....rrrr.
+.rr.rr....rr....rr.rr.
+.rr..rr...rr...rr..rr.
+.rr...rr..rr..rr...rr.
+.rr....rrrrrrrr....rr.
+.rr...rrrrrrrrrr...rr.
+.rr.......rr.......rr.
 ......................
 """.strip('\n')
 
@@ -177,11 +178,17 @@ class BigMap(Map):
                 if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
                     continue
 
-        for i in range(10):
-             while True:
+                game.items[(x, y)] = HealthKit()
+                break
+
+            player_descriptions = repository.all()
+
+            for description in player_descriptions:
+                for i in range(10):
+                    while True:
                         x = random.randint(0, width - 1)
                         y = random.randint(0, height - 1)
-
                         if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
                             continue
-
+                        game.players[(x, y)] = Player(description[0], repository, {"team": 'Radient' if i < 5 else 'Dare'})
+                        break
