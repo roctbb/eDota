@@ -30,10 +30,10 @@ class Game:
                         d = {'type' : 'Player'}
                         d.update(j['player']['properties'])
                         if j['player']['inventory']:
-                            d.update(j['player']['inventory'])
+                            cell.append(j['player']['inventory'])
                         else:
                             d['inventory'] = list()
-                        cell.append(d)
+                            cell.append(d)
                     else:
                         cell.append({})
                     if j['items']:
@@ -41,8 +41,9 @@ class Game:
                     else:
                         cell.append({})
                     if j['object']:
-                        cell.append({'type' : j['object']['type'],
-                                    'properties': j['object']['properties']})
+                        dict = {'type' : j['object']['type']}
+                        dict.update(j['object']['properties'])
+                        cell.append(dict)
                     else:
                         cell.append({})
                 map_state_player.append(cell)
