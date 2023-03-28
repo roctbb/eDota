@@ -40,11 +40,12 @@
         Coin: "/static/objects/coin/coin.png",
         Grass: "/static/grass.png",
         Stump: "/static/stump.png",
+        HardWall: "/static/objects/hardwall/hardwall.png",
         Road: "/static/road.png",
         RadientAncient: "/static/objects/ancient/radient.png",
         DareAncient: "/static/objects/ancient/dare.png",
-        Flagred: "/static/objects/Flag/flag.png",
-        Flagblue: "/static/objects/Flag/rkkfnfnjv.png",
+        FlagRed: "/static/objects/Flag/flag.png",
+        FlagBlue: "/static/objects/Flag/rkkfnfnjv.png",
         Rocks: "/static/rocks.png",
         Snow: "/static/snow.png",
         Water: "/static/water.png",
@@ -206,7 +207,6 @@
         }
 
         if (object.direction !== "no") {
-            console.log(team + object.type)
             ctx.drawImage(images[team + object.type][object.direction], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
         } else {
             ctx.drawImage(images[team + object.type], offset_left + object.x * cell_side, offset_top + object.y * cell_side, cell_side, cell_side);
@@ -220,6 +220,11 @@
         if (object.properties.life) {
             let w_life = ctx.measureText(object.properties.life.toString()).width;
             ctx.fillText(object.properties.life.toString(), offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 0.6) * cell_side);
+        }
+        if (object.properties.has_flag) {
+            ctx.fillStyle = '#710193';
+            let w_life = ctx.measureText("Несет флаг").width;
+            ctx.fillText("Несет флаг", offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 1) * cell_side);
         }
     }
 
@@ -268,7 +273,6 @@
         })
 
         frame.events.forEach(event => {
-            console.log(event)
             if (event.type === 'death')
             {
                 ctx.drawImage(images['Explosion'], offset_left + event.params.at[0] * cell_side, offset_top + event.params.at[1] * cell_side, cell_side, cell_side);

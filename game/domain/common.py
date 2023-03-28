@@ -95,7 +95,7 @@ class Object:
             self.properties['life'] -= power
 
     def alive(self) -> bool:
-        return self.properties.get('life', 0) > 0
+        return self.properties.get('life', 1) > 0
 
     def as_dict(self, point: Point = None):
         description = {

@@ -1,6 +1,7 @@
 import random
 
 from domain.common import *
+from domain.items.flag import FlagBlue, FlagRed
 
 
 class Game:
@@ -177,8 +178,10 @@ class Game:
                 if not target.alive():
                     try:
                         if target.inventory.items():
-                            self.items[(attack_point.x, attack_point.y)] = random.choice(
-                                [item for item in target.inventory.items()])
+                            for item in target.inventory.items():
+                                if self._is_flag(item):
+                                    self.items[(attack_point.x, attack_point.y)] = item
+                                    target.properties['has_flag'] = False
                             target.inventory = None
 
                     except:
@@ -238,7 +241,19 @@ class Game:
             # забираем предметы в ячейке
             item = self.items.get((x, y))
             if item:
-                player.inventory.add(item)
+
+                if not self._is_flag(item):
+                    player.inventory.add(item)
+                else:
+                    team = player.properties.get('team', 'Neutral')
+
+                    if team == 'Dare' and isinstance(item, FlagBlue):
+                        player.properties['has_flag'] = True
+                        player.inventory.add(item)
+                    if team == 'Radient' and isinstance(item, FlagRed):
+                        player.properties['has_flag'] = True
+                        player.inventory.add(item)
+
                 del self.items[(x, y)]
 
         return []
@@ -250,3 +265,6 @@ class Game:
     @property
     def height(self):
         return self.size[1]
+
+    def _is_flag(self, item):
+        return isinstance(item, FlagBlue) or isinstance(item, FlagRed)
