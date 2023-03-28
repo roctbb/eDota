@@ -91,7 +91,7 @@ class Game:
             "height": self.height
         }
 
-    def make_step(self):
+    def make_step(self) -> object:
         state = self.get_state()
 
         attackers = []
