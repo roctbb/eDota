@@ -36,6 +36,8 @@
     const ctx = canvas.getContext("2d");
 
     let image_urls = {
+        RedCarpet: "/static/red_carpet.png",
+        BlueCarpet: "/static/blue_carpet.png",
         Wall: "/static/objects/wall/wall.png",
         Coin: "/static/objects/coin/coin.png",
         Grass: "/static/grass.png",
@@ -223,8 +225,8 @@
         }
         if (object.properties.has_flag) {
             ctx.fillStyle = '#710193';
-            let w_life = ctx.measureText("Несет флаг").width;
-            ctx.fillText("Несет флаг", offset_left + (object.x + 0.5) * cell_side - w_life / 2, offset_top + (object.y + 1) * cell_side);
+            let w_life = ctx.measureText("С ФЛАГОМ").width;
+            ctx.fillText("С ФЛАГОМ", offset_left + (object.x + 0.5) * cell_side - w_life / 1, offset_top + (object.y + 1) * cell_side);
         }
     }
 

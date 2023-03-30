@@ -1,5 +1,4 @@
-import random
-
+import sys
 from domain.common import *
 from domain.items.flag import FlagBlue, FlagRed
 
@@ -11,6 +10,8 @@ class Game:
         self.items = {}
         self.objects = {}
         self.backgrounds = {}
+    def stop(self):
+        sys.exit()
 
     def get_state(self):
         state = [[{"player": None, "items": [], "object": None} for _ in range(self.height)] for _ in range(self.width)]
@@ -28,7 +29,7 @@ class Game:
                 cell = []
                 for j in i:
                     if j['player']:
-                        d = {'type' : 'Player'}
+                        d = {'type' : 'player'}
                         d.update(j['player']['properties'])
                         if j['player']['inventory']:
                             cell.append(j['player']['inventory'])
@@ -48,8 +49,7 @@ class Game:
                     else:
                         cell.append({})
                 map_state_player.append(cell)
-        print(map_state_player)
-
+        #print(state)
         return state
 
     def get(self, point: Point):
@@ -210,6 +210,7 @@ class Game:
             return
 
         new_point = None
+        team = player.properties.get('team')
 
         if decision == Decision.GO_LEFT:
             for _ in range(speed):
@@ -237,6 +238,17 @@ class Game:
 
             x = new_point.x
             y = new_point.y
+            print(self.objects.get((x, y)))
+            background = str(self.objects.get((x, y))).split('.')[0]
+            if str((str(self.objects.get((x, y))).split('.'))[0]) != 'None':
+                background = str(self.objects.get((x, y))).split('.')[2]
+
+            if player.properties['has_flag'] and team == 'Radient' and background == 'blue_carpet':
+                print('VICTORY')
+                sys.exit()
+            if player.properties['has_flag'] and team == 'Dare' and background == 'red_carpet':
+                print('VICTORY')
+                sys.exit()
 
             # забираем предметы в ячейке
             item = self.items.get((x, y))
@@ -244,17 +256,19 @@ class Game:
 
                 if not self._is_flag(item):
                     player.inventory.add(item)
+                    del self.items[(x, y)]
                 else:
-                    team = player.properties.get('team', 'Neutral')
-
+                    team = player.properties.get('team')
                     if team == 'Dare' and isinstance(item, FlagBlue):
                         player.properties['has_flag'] = True
                         player.inventory.add(item)
+                        del self.items[(x, y)]
                     if team == 'Radient' and isinstance(item, FlagRed):
                         player.properties['has_flag'] = True
                         player.inventory.add(item)
+                        del self.items[(x, y)]
 
-                del self.items[(x, y)]
+
 
         return []
 

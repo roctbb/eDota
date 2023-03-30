@@ -18,6 +18,8 @@ from domain.objects.stump import Stump
 from domain.objects.tree import Tree
 from domain.objects.wall import Wall
 from domain.objects.hardwall import HardWall
+from domain.objects.red_carpet import RedCarpet
+from domain.objects.blue_carpet import BlueCarpet
 from domain.objects.water import Water
 from domain.player import Player
 from domain.repositories.players import PlayersRepository
@@ -25,11 +27,11 @@ from domain.units.tower import Tower
 
 TEMPLATE = """
 hhhhhhhhhhhhhhhhhhhhhh
-tkk................kkt
 tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk................kkt
-tkk.......kk.......kkt
+kkt..KKKKKKKKKKKK..kkt
+kkt..K..........K..kkt
+kkt...K........K...kkt
+kkt....KKKKKKKK....kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
@@ -46,8 +48,8 @@ tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk......kkkk......kkt
 tkk.....kkkkkk.....kkt
-t.s.......kk.......s.t
-t.s.......kk.......s.t
+twswwwwwwwkkwwwwwwwswt
+twswwwwwwwkkwwwwwwwswt
 tkk.....kkkkkk.....kkt
 tkk......kkkk......kkt
 tkk.......kk.......kkt
@@ -64,19 +66,20 @@ tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
-tkk.......kk.......kkt
-tkk................kkt
-tkk.......kk.......kkt
+kkt...rCCCCCCCCr...kkt
+kkt...CrrrrrrrrC...kkt
+kkt..CrrrrrrrrrrC..kkt
+kkt..CCCCCCCCCCCC..kkt
 tkk.......kk.......kkt
 hhhhhhhhhhhhhhhhhhhhhh
 """.strip('\n')
 
 BACKGROUND = """      
-......................
 .rr.......rr.......rr.
-.rr...rrrrrrrrrr...rr.
-.rr....rrrrrrrr....rr.
-.rr...rr..rr..rr...rr.
+.rr..KKKKKKKKKKKK..rr.
+.rr..KrrrrrrrrrrK..rr.
+.rr...KrrrrrrrrK...rr.
+.rr...rKKKKKKKKr...rr.
 .rr..rr...rr...rr..rr.
 .rr.rr....rr....rr.rr.
 .rrrr.....rr.....rrrr.
@@ -111,16 +114,18 @@ wwwwwwwwwwrrwwwwwwwwww
 .rrrr.....rr.....rrrr.
 .rr.rr....rr....rr.rr.
 .rr..rr...rr...rr..rr.
-.rr...rr..rr..rr...rr.
-.rr....rrrrrrrr....rr.
-.rr...rrrrrrrrrr...rr.
+.rr...rCCCCCCCCr...rr.
+.rr...CrrrrrrrrC...rr.
+.rr..CrrrrrrrrrrC..rr.
+.rr..CCCCCCCCCCCC..rr.
 .rr.......rr.......rr.
-......................
 """.strip('\n')
 
 
 
 TYPES = {
+    'C': BlueCarpet,
+    'K': RedCarpet,
     '#': Wall,
     'w': Water,
     't': Tree,
@@ -181,14 +186,16 @@ class BigMap(Map):
                 game.items[(x, y)] = HealthKit()
                 break
 
-            player_descriptions = repository.all()
+        player_descriptions = repository.all()
+        y = 4
+        for description in player_descriptions:
+            for i in range(0, 5, 1):
+                x = 4
+                if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
+                    continue
+                game.players[(x, y)] = Player(description[0], repository, {"team": 'Dare'})
+                game.players[(width - x, y)] = Player(description[0], repository, {"team": 'Radient'})
+                y += 3
 
-            for description in player_descriptions:
-                for i in range(10):
-                    while True:
-                        x = random.randint(0, width - 1)
-                        y = random.randint(0, height - 1)
-                        if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
-                            continue
-                        game.players[(x, y)] = Player(description[0], repository, {"team": 'Radient' if i < 5 else 'Dare'})
-                        break
+        game.items[(4, 10)] = FlagRed()
+        game.items[(width - 5, height - 12)] = FlagBlue()

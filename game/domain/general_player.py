@@ -16,7 +16,8 @@ class GeneralPlayer(Object):
             'speed': 1,
             'power': 1,
             'life': 10,
-            'fire_distance': 10
+            'fire_distance': 10,
+            'has_flag': False
         }
 
         self.history = []
