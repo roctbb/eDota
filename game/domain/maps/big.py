@@ -193,7 +193,6 @@ class BigMap(Map):
             x = 4
             # if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
             #     continue
-
             if description.team == "Radient":
                 game.players[(width - x, ry)] = Player(description.id, repository, {"team": "Radient"})
                 ry += 3

@@ -112,6 +112,11 @@
             socket.on('frame', function (message) {
                 frame = JSON.parse(message)
                 drawFrame()
+
+            })
+
+            socket.on('victory', function (message) {
+                alert(message.side)
             })
         }
     };
@@ -201,10 +206,9 @@
     })
 
     function drawObject(object, offset_left, offset_top, team) {
-        if (object.properties.team && images[object.properties.team + object.type])  {
+        if (object.properties.team && images[object.properties.team + object.type]) {
             team = object.properties.team
-        }
-        else {
+        } else {
             team = ''
         }
 
@@ -275,8 +279,7 @@
         })
 
         frame.events.forEach(event => {
-            if (event.type === 'death')
-            {
+            if (event.type === 'death') {
                 ctx.drawImage(images['Explosion'], offset_left + event.params.at[0] * cell_side, offset_top + event.params.at[1] * cell_side, cell_side, cell_side);
             }
             if (event.type === 'shot') {

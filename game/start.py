@@ -18,8 +18,10 @@ while True:
     game = Game()
     BigMap.init(game, repository)
 
-    for step in range(120):
-
+    while not game.winner:
         frame = game.make_step()
         r.publish('edota_frame', json.dumps(frame))
         time.sleep(0.1)
+
+    r.publish('victory', game.winner)
+

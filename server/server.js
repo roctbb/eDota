@@ -37,6 +37,12 @@ const init_redis = async () => {
             socket.emit('frame', message)
         })
     });
+    await subscriber.subscribe('victory', (side) => {
+        connections.forEach(socket => {
+            socket.emit('victory', {"side": side})
+        })
+    });
+
 }
 
 init_redis()
@@ -65,6 +71,7 @@ app.post('/', async (req, res) => {
         }
 
         try {
+            console.log(q.text)
             await postgresClient.query(q)
         } catch (e) {
             console.log(e)

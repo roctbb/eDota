@@ -10,6 +10,8 @@ class Game:
         self.items = {}
         self.objects = {}
         self.backgrounds = {}
+        self.winner = None
+
     def stop(self):
         sys.exit()
 
@@ -29,7 +31,7 @@ class Game:
                 cell = []
                 for j in i:
                     if j['player']:
-                        d = {'type' : 'player'}
+                        d = {'type': 'player'}
                         d.update(j['player']['properties'])
                         if j['player']['inventory']:
                             cell.append(j['player']['inventory'])
@@ -39,17 +41,17 @@ class Game:
                     else:
                         cell.append({})
                     if j['items']:
-                        cell.append({'type' : j['items']['type']})
+                        cell.append({'type': j['items']['type']})
                     else:
                         cell.append({})
                     if j['object']:
-                        dict = {'type' : j['object']['type']}
+                        dict = {'type': j['object']['type']}
                         dict.update(j['object']['properties'])
                         cell.append(dict)
                     else:
                         cell.append({})
                 map_state_player.append(cell)
-        #print(state)
+        # print(state)
         return state
 
     def get(self, point: Point):
@@ -245,10 +247,10 @@ class Game:
 
             if player.properties['has_flag'] and team == 'Radient' and background == 'blue_carpet':
                 print('VICTORY')
-                sys.exit()
+                self.winner = "Radient"
             if player.properties['has_flag'] and team == 'Dare' and background == 'red_carpet':
                 print('VICTORY')
-                sys.exit()
+                self.winner = "Dare"
 
             # забираем предметы в ячейке
             item = self.items.get((x, y))
@@ -267,8 +269,6 @@ class Game:
                         player.properties['has_flag'] = True
                         player.inventory.add(item)
                         del self.items[(x, y)]
-
-
 
         return []
 
