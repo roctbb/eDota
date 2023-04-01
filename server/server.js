@@ -46,25 +46,33 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', async (req, res) => {
-    if (req.body.key && req.body.script) {
+    // check data
+    for (var i = 1; i <= 5; i+=1) {
+        if (!req.body["name" + i] || !req.body["code" + i]) {
+            console.log(i, req.body)
+            res.redirect('/')
+        }
+    }
+
+    for (var j = 1; j <= 5; j++) {
+        var code = req.body["code" + j]
+        var name = req.body["name" + j]
+
         const q = {
-            text: "UPDATE players SET code = $1, state = 'ready' WHERE key = $2",
-            values: [req.body.script, req.body.key],
+            text: "UPDATE players SET code = $1, state = 'ready' WHERE name = $2",
+            values: [code, name],
             rowMode: 'array',
         }
 
         try {
             await postgresClient.query(q)
-            res.redirect('/game')
         } catch (e) {
             console.log(e)
             res.redirect('/')
         }
     }
-    else {
-        res.redirect('/')
-    }
 
+    res.redirect('/game')
 
 });
 
@@ -80,7 +88,7 @@ app.post('/register', async (req, res) => {
     if (req.body.name) {
         let key = helpers.makeKey(6)
         const q = {
-            text: "INSERT INTO players (name, key) VALUES ($1, $2)",
+            text: "INSERT INTO players (name, code) VALUES ($1, $2)",
             values: [req.body.name, key],
             rowMode: 'array',
         }

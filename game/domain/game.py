@@ -238,7 +238,7 @@ class Game:
 
             x = new_point.x
             y = new_point.y
-            print(self.objects.get((x, y)))
+
             background = str(self.objects.get((x, y))).split('.')[0]
             if str((str(self.objects.get((x, y))).split('.'))[0]) != 'None':
                 background = str(self.objects.get((x, y))).split('.')[2]

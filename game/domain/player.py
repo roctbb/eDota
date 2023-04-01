@@ -18,9 +18,9 @@ class Player(GeneralPlayer):
 
     def _update_decider(self):
         description = self.repository.get(self.id)
-        self.properties['name'] = description[1]
+        self.properties['name'] = description.name
         with open(f'./bots/{self.id}.py', 'w') as file:
-            file.write(description[4])
+            file.write(description.code)
         sys.path.append("./bots/")
         module = __import__(f"{self.id}", fromlist=["make_choice"])
         module = imp.reload(module)

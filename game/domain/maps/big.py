@@ -28,10 +28,10 @@ from domain.units.tower import Tower
 TEMPLATE = """
 hhhhhhhhhhhhhhhhhhhhhh
 tkk.......kk.......kkt
-kkt..KKKKKKKKKKKK..kkt
-kkt..K..........K..kkt
-kkt...K........K...kkt
-kkt....KKKKKKKK....kkt
+tkk..KKKKKKKKKKKK..kkt
+tkk..K..........K..kkt
+tkk...K........K...kkt
+tkk....KKKKKKKK....kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
@@ -66,10 +66,10 @@ tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
 tkk.......kk.......kkt
-kkt...rCCCCCCCCr...kkt
-kkt...CrrrrrrrrC...kkt
-kkt..CrrrrrrrrrrC..kkt
-kkt..CCCCCCCCCCCC..kkt
+tkk...rCCCCCCCCr...kkt
+tkk...CrrrrrrrrC...kkt
+tkk..CrrrrrrrrrrC..kkt
+tkk..CCCCCCCCCCCC..kkt
 tkk.......kk.......kkt
 hhhhhhhhhhhhhhhhhhhhhh
 """.strip('\n')
@@ -187,15 +187,21 @@ class BigMap(Map):
                 break
 
         player_descriptions = repository.all()
-        y = 4
+        ry = 4
+        dy = 4
         for description in player_descriptions:
-            for i in range(0, 5, 1):
-                x = 4
-                if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
-                    continue
-                game.players[(x, y)] = Player(description[0], repository, {"team": 'Dare'})
-                game.players[(width - x, y)] = Player(description[0], repository, {"team": 'Radient'})
-                y += 3
+            x = 4
+            # if (x, y) in game.objects or (x, y) in game.items or (x, y) in game.players:
+            #     continue
+
+            if description.team == "Radient":
+                game.players[(width - x, ry)] = Player(description.id, repository, {"team": "Radient"})
+                ry += 3
+            else:
+                game.players[(x, dy)] = Player(description.id, repository, {"team": "Dare"})
+                dy += 3
+
+
 
         game.items[(4, 10)] = FlagRed()
         game.items[(width - 5, height - 12)] = FlagBlue()
